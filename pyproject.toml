@@ -1,0 +1,25 @@
+[project]
+name = "ai-build-night002"
+version = "0.1.0"
+description = "Built live at AI Build Night 002"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.165.0",
+    "jinja2>=3.1.6",
+    "uvicorn>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx2>=2.16.2",
+    "pytailwindcss>=0.4.2",
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
