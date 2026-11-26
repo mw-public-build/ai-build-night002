@@ -1,0 +1,20 @@
+{
+  "name": "ai-build-night002",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "features": {
+    "ghcr.io/va-h/devcontainers-features/uv:1": {}
+  },
+  "postCreateCommand": "uv sync",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "app",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "charliermarsh.ruff"]
+    }
+  }
+}
