@@ -10,13 +10,28 @@
   <ul class="mt-2 space-y-2">
     {% for place in places %}
     <li class="border-t border-line pt-2 first:border-t-0 first:pt-0" data-place="{{ place.name }}">
-      <div class="flex flex-wrap items-center gap-2">
-        <h3 class="font-medium">{{ place.name }}</h3>
-        {% if place.status %}
-        <span class="rounded-full px-2 py-0.5 text-xs font-medium {{ 'bg-red-600 text-white' if place.status.level == 'issue' else 'bg-green-600 text-white' }}"
-          data-room-status="{{ place.status.level }}">{{ place.status.text }} · note {{ "%02d" | format(place.status_note.number) }}</span>
+      <details id="room-{{ place.name | replace(' ', '-') }}" class="group">
+        <summary class="flex cursor-pointer list-none flex-wrap items-center gap-1 [&::-webkit-details-marker]:hidden">
+          <h3 class="font-medium">{{ place.name }}</h3>
+          {# Heroicons: chevron-down, mini, 20px #}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-4 text-muted transition group-open:rotate-180" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+          </svg>
+          {% if place.status %}
+          <span class="ml-1 rounded-full px-2 py-0.5 text-xs font-medium {{ 'bg-red-600 text-white' if place.status.level == 'issue' else 'bg-green-600 text-white' }}"
+            data-room-status="{{ place.status.level }}">{{ place.status.text }} · note {{ "%02d" | format(place.status_note.number) }}</span>
+          {% endif %}
+        </summary>
+        {% if place.schedule %}
+        <ol class="my-1 space-y-0.5 border-l-2 border-line pl-2 text-xs" data-schedule="{{ place.name }}">
+          {% for note in place.schedule %}
+          <li><span class="text-muted">{{ note.time }} · note {{ "%02d" | format(note.number) }}:</span> {{ note.text }}</li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p class="my-1 text-xs text-muted">No notes for this room today.</p>
         {% endif %}
-      </div>
+      </details>
       <ul class="text-xs">
         {% if place.about %}
         <li class="text-muted">{{ place.about }} · note {{ "%02d" | format(place.about_note) }}</li>
@@ -31,16 +46,6 @@
         </li>
         {% endfor %}
       </ul>
-      {% if place.schedule %}
-      <details id="schedule-{{ place.name | replace(' ', '-') }}" hx-preserve="true" class="mt-2 text-sm">
-        <summary class="cursor-pointer font-medium text-accent">Today in {{ place.name }}</summary>
-        <ol class="mt-1 space-y-1" data-schedule="{{ place.name }}">
-          {% for note in place.schedule %}
-          <li><span class="text-muted">{{ note.time }} · note {{ "%02d" | format(note.number) }}:</span> {{ note.text }}</li>
-          {% endfor %}
-        </ol>
-      </details>
-      {% endif %}
     </li>
     {% endfor %}
   </ul>
