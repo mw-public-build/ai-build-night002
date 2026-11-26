@@ -2,6 +2,38 @@
 
 A web app built live with FastAPI, HTMX and Tailwind.
 
+## KWENCH Live
+
+Problems and needs are posted for everyone; people answer them as they
+post their status. The rules show who's really free from the latest
+notes, citing each one.
+
+It is a live status page everyone at KWENCH can see: who is where, who is free,
+and what needs help. Every status comes from a note in the feed, and the
+page cites the note it came from. Fixed rules decide who is free; no AI
+makes that call. The people and notes are the fictional KWENCH story.
+
+Run it with `uv run uvicorn app.main:app --reload --port 8000` and open
+http://localhost:8000. Restarting the server clears the posts added
+during a demo. http://localhost:8000/preview shows the page in a desktop
+frame and a phone frame side by side.
+
+Demo:
+
+1. Open the page. Sam is green (free in Novelty, note 07), Kai is red
+   (busy with a welcome in Connection, note 06).
+2. Post the alert "slides won't show in Novelty". It appears under
+   **Open needs** in red, and Novelty gets a red status badge. The rules
+   suggest Sam; Kai is passed over because of note 06. The alert card
+   also drafts a message to Sam and a request to Casey and Priya to help
+   build a fallback.
+3. Press **Load 7:10 update**. Kai posts "Welcome done, I'm free. I'll
+   take the Novelty screen." in answer to the need, and Casey posts that
+   Sam got pulled into another member's setup.
+4. Watch Sam turn red and Kai turn green. The need turns amber, "Taken
+   by Kai", and the alert re-routes to Kai, citing the new note on why
+   not Sam. Anyone can also press **I'll take it** on an open need.
+
 ## Run it
 
 You need [uv](https://docs.astral.sh/uv/).

@@ -18,7 +18,13 @@ def test_index_loads_htmx_and_styles() -> None:
     assert response.status_code == 200
     assert "/static/js/htmx-2.0.11.min.js" in response.text
     assert "/static/css/app.css" in response.text
-    assert 'hx-get="/fragments/ping"' in response.text
+
+
+def test_preview_shows_desktop_and_phone_frames() -> None:
+    response = client.get("/preview")
+
+    assert response.status_code == 200
+    assert response.text.count('<iframe src="/"') == 2
 
 
 def test_ping_returns_a_fragment() -> None:

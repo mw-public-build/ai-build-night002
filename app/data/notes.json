@@ -1,0 +1,87 @@
+{
+  "people": ["Morgan", "Sam", "Kai", "Casey", "Priya"],
+  "you": "Morgan",
+  "places": [
+    {"name": "Front desk", "about": "Serves both rooms", "note": 1},
+    {"name": "Novelty", "about": "Workshop room, screen", "note": 1},
+    {"name": "Connection", "about": "Meeting room, screen", "note": 1}
+  ],
+  "bookings": [
+    {"place": "Novelty", "what": "Field Notes workshop at 2:00 p.m.", "note": 2}
+  ],
+  "notes": [
+    {
+      "number": 1,
+      "time": "9:00 a.m.",
+      "title": "Room card",
+      "text": "Novelty is the workshop room. Connection is a separate meeting room. Both are served by the front desk.",
+      "facts": []
+    },
+    {
+      "number": 2,
+      "time": "9:15 a.m.",
+      "title": "Field Notes booking",
+      "text": "The Field Notes workshop is booked in Novelty for 2:00 p.m. The presenter plans to show slides from a laptop.",
+      "facts": []
+    },
+    {
+      "number": 3,
+      "time": "10:00 a.m.",
+      "title": "Front-desk rota",
+      "author": "Front-desk rota",
+      "text": "Morgan is covering the front desk during arrivals. If a member needs hands-on help, Morgan can direct them to the colleague covering that work.",
+      "facts": [
+        {"person": "Morgan", "status": "available", "room": "Front desk", "skills": []}
+      ]
+    },
+    {
+      "number": 4,
+      "time": "11:00 a.m.",
+      "title": "Screen support from Priya",
+      "author": "Priya",
+      "text": "Sam usually handles laptop and screen setup. Kai also knows the meeting-room screens and can cover when available.",
+      "facts": [
+        {"person": "Sam", "status": "unknown", "room": null, "skills": ["screens", "laptop setup"]},
+        {"person": "Kai", "status": "unknown", "room": null, "skills": ["meeting-room screens"]}
+      ]
+    },
+    {
+      "number": 5,
+      "time": "1:30 p.m.",
+      "title": "Afternoon assignments",
+      "text": "Sam has workshop setup in Novelty. Kai has the member welcome in Connection. Check the latest handoff for who can leave their task.",
+      "facts": [
+        {"person": "Sam", "status": "busy", "room": "Novelty", "skills": []},
+        {"person": "Kai", "status": "busy", "room": "Connection", "skills": []}
+      ]
+    },
+    {
+      "number": 6,
+      "time": "1:50 p.m.",
+      "title": "Welcome update from Kai",
+      "author": "Kai",
+      "text": "I’m in Connection with a member for their welcome. I’ll let the desk know when I’m free.",
+      "facts": [
+        {"person": "Kai", "status": "busy", "room": "Connection", "skills": []}
+      ]
+    },
+    {
+      "number": 7,
+      "time": "1:54 p.m.",
+      "title": "Desk handoff from Casey",
+      "author": "Casey",
+      "text": "Sam is in Novelty now. Setup is finished and Sam can help with the screen right away.",
+      "facts": [
+        {"person": "Sam", "status": "available", "room": "Novelty", "skills": []}
+      ]
+    },
+    {
+      "number": 8,
+      "time": "1:55 p.m.",
+      "title": "A member at the front desk",
+      "author": "A member at the front desk",
+      "text": "My workshop in Novelty starts in five minutes, and my slides won’t show on the screen. Can someone give me a hand?",
+      "facts": []
+    }
+  ]
+}

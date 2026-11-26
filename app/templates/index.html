@@ -1,25 +1,83 @@
 {% extends "base.html" %}
 
+{% block title %}KWENCH Live{% endblock %}
+
 {% block content %}
-<h1 class="font-serif text-4xl font-medium tracking-tight">AI Build Night 002</h1>
-<p class="mt-3 text-lg text-muted">Built live with FastAPI, HTMX and Tailwind.</p>
+<h1 class="font-serif text-4xl font-medium tracking-tight">KWENCH Live</h1>
+<p class="mt-3 text-lg text-muted">Who is where, who is free, and what needs help. Live for everyone at KWENCH.</p>
 
-<section class="mt-10 rounded-2xl border border-line bg-surface p-6 shadow-sm">
-  <h2 class="font-serif text-xl font-medium">Server round trip</h2>
-  <p class="mt-1 text-muted">The button asks the server for a fragment and swaps it in below.</p>
-
-  <button
-    class="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2 font-medium text-white transition hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-    hx-get="/fragments/ping"
-    hx-target="#ping-result"
-  >
-    {# Heroicons: arrow-path, outline, 24px #}
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-    </svg>
-    Ping the server
-  </button>
-
-  <div id="ping-result" class="mt-5" aria-live="polite"></div>
+<section id="chat" class="sticky top-0 z-10 mt-8 rounded-2xl border border-line bg-surface p-5 shadow-sm">
+  <form class="flex flex-col gap-3 sm:flex-row" hx-post="/crisis" hx-target="#crisis">
+    <label for="problem" class="sr-only">What needs help?</label>
+    <input
+      id="problem"
+      name="problem"
+      required
+      placeholder="What needs help? e.g. slides won't show in Novelty"
+      class="flex-1 rounded-xl border border-line bg-canvas px-4 py-2 focus-visible:outline-2 focus-visible:outline-accent"
+    >
+    <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2 font-medium text-white transition hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+      {# Heroicons: exclamation-triangle, outline, 24px #}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+      </svg>
+      Post an alert
+    </button>
+  </form>
+  <div id="crisis" aria-live="polite"></div>
 </section>
+
+<section id="needs" class="mt-6" hx-get="/fragments/needs" hx-trigger="every 3s, notes-changed from:body">
+  {% include "partials/needs.html" %}
+</section>
+
+<div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+  <div id="board" class="contents"
+    hx-get="/fragments/board" hx-trigger="every 3s, notes-changed from:body">
+    {% include "partials/board.html" %}
+  </div>
+
+  <section id="notes" class="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="font-serif text-xl font-medium">Feed</h2>
+      <button class="rounded-xl border border-accent px-3 py-1 text-sm font-medium text-accent hover:bg-accent-soft"
+        hx-post="/notes/twist" hx-swap="none">Load 7:10 update</button>
+    </div>
+
+    <details class="mt-4 rounded-xl bg-canvas p-3">
+      <summary class="cursor-pointer text-sm font-medium">New post</summary>
+      <form class="mt-3 grid gap-2 text-sm" hx-post="/notes" hx-swap="none" hx-on::after-request="this.reset()">
+        <div class="grid grid-cols-2 gap-2">
+          <input name="time" placeholder="Time, e.g. 1:56 p.m." class="rounded-lg border border-line bg-surface px-2 py-1">
+          <input name="author" placeholder="From" class="rounded-lg border border-line bg-surface px-2 py-1">
+        </div>
+        <textarea name="text" required rows="2" placeholder="What happened?" class="rounded-lg border border-line bg-surface px-2 py-1"></textarea>
+        <input name="responds_to" inputmode="numeric" placeholder="Responding to need # (optional)" class="rounded-lg border border-line bg-surface px-2 py-1">
+        <div class="grid grid-cols-3 gap-2">
+          <input name="person" placeholder="Person" class="rounded-lg border border-line bg-surface px-2 py-1">
+          <select name="status" class="rounded-lg border border-line bg-surface px-2 py-1">
+            <option>available</option>
+            <option>busy</option>
+            <option>unknown</option>
+          </select>
+          <input name="room" placeholder="Room" class="rounded-lg border border-line bg-surface px-2 py-1">
+        </div>
+        <input name="activity" placeholder="Doing what? e.g. on the phone" class="rounded-lg border border-line bg-surface px-2 py-1">
+        <div class="grid grid-cols-3 gap-2">
+          <input name="status_room" placeholder="Room status: room" class="rounded-lg border border-line bg-surface px-2 py-1">
+          <input name="status_text" placeholder="Status" class="rounded-lg border border-line bg-surface px-2 py-1">
+          <select name="status_level" class="rounded-lg border border-line bg-surface px-2 py-1">
+            <option>issue</option>
+            <option>ok</option>
+          </select>
+        </div>
+        <button class="justify-self-start rounded-xl bg-accent px-3 py-1 font-medium text-white hover:bg-accent-strong">Post</button>
+      </form>
+    </details>
+
+    <div id="feed" class="mt-4" hx-get="/fragments/feed" hx-trigger="every 3s, notes-changed from:body">
+      {% include "partials/feed.html" %}
+    </div>
+  </section>
+</div>
 {% endblock %}
