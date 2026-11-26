@@ -31,6 +31,16 @@
         </li>
         {% endfor %}
       </ul>
+      {% if place.schedule %}
+      <details id="schedule-{{ place.name | replace(' ', '-') }}" hx-preserve="true" class="mt-2 text-sm">
+        <summary class="cursor-pointer font-medium text-accent">Today in {{ place.name }}</summary>
+        <ol class="mt-1 space-y-1" data-schedule="{{ place.name }}">
+          {% for note in place.schedule %}
+          <li><span class="text-muted">{{ note.time }} · note {{ "%02d" | format(note.number) }}:</span> {{ note.text }}</li>
+          {% endfor %}
+        </ol>
+      </details>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>

@@ -85,3 +85,12 @@ def test_page_shows_cards_in_sorted_order_with_sources() -> None:
     assert "From note 07 · 1:54 p.m." in response.text
     assert "From note 06 · 1:50 p.m." in response.text
     assert "No note on where they are now." in response.text
+
+
+def test_room_schedule_lists_the_day_from_the_notes() -> None:
+    board = load_board()
+    places = {place.name: place for place in build_map(board, work_out_statuses(board))}
+
+    assert [note.number for note in places["Novelty"].schedule] == [2, 5, 7]
+    assert [note.number for note in places["Connection"].schedule] == [5, 6]
+    assert 'data-schedule="Novelty"' in client.get("/").text

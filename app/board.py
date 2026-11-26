@@ -131,6 +131,7 @@ class MapPlace:
     people: list[PersonStatus] = field(default_factory=list)
     status: RoomStatus | None = None
     status_note: Note | None = None
+    schedule: list[Note] = field(default_factory=list)
 
 
 def build_map(board: Board, statuses: list[PersonStatus]) -> list[MapPlace]:
@@ -146,6 +147,8 @@ def build_map(board: Board, statuses: list[PersonStatus]) -> list[MapPlace]:
             place = places.setdefault(room_status.room, MapPlace(name=room_status.room))
             place.status = room_status
             place.status_note = note
+    for place in places.values():
+        place.schedule = room_schedule(board, place.name)
     unknown = MapPlace(name=UNKNOWN_PLACE)
     for person in sort_statuses(statuses):
         if person.room is None:
@@ -153,6 +156,19 @@ def build_map(board: Board, statuses: list[PersonStatus]) -> list[MapPlace]:
         else:
             places.setdefault(person.room, MapPlace(name=person.room)).people.append(person)
     return [*places.values(), unknown]
+
+
+def room_schedule(board: Board, room: str) -> list[Note]:
+    """The day in one room: bookings, people placed there, and alerts, oldest first."""
+    booking_notes = {booking.note for booking in board.bookings if booking.place == room}
+    schedule = []
+    for note in sorted(board.notes, key=lambda n: n.number):
+        in_room = any(fact.room == room for fact in note.facts) or any(
+            status.room == room for status in note.room_statuses
+        )
+        if in_room or note.number in booking_notes:
+            schedule.append(note)
+    return schedule
 
 
 def has_skill(person: PersonStatus, skill: str | None) -> bool:
