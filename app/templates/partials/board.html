@@ -1,4 +1,6 @@
+{# Grid items for the page's three columns. Order: phone Feed, People, Rooms;
+   medium People and Rooms, then Feed full width; wide People, Feed, Rooms. #}
 <div class="contents">
-  <div>{% include "partials/map.html" %}</div>
-  <div>{% include "partials/cards.html" %}</div>
+  <div data-column="people" class="order-2 md:order-1 xl:order-1">{% include "partials/cards.html" %}</div>
+  <div data-column="rooms" class="order-3 md:order-2 xl:order-3">{% include "partials/map.html" %}</div>
 </div>
