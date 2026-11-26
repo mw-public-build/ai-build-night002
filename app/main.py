@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, quote, unquote
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -14,6 +14,7 @@ from app.board import (
     Board,
     Fact,
     Note,
+    PersonStatus,
     RoomStatus,
     build_map,
     load_board,
@@ -38,10 +39,26 @@ def current_board() -> Board:
     return board
 
 
-def board_context(board: Board) -> dict:
+SIGNED_IN_COOKIE = "kwench_name"
+
+
+def signed_in_name(request: Request) -> str | None:
+    """The name from the demo sign-in cookie, if any."""
+    raw = request.cookies.get(SIGNED_IN_COOKIE)
+    return unquote(raw) if raw else None
+
+
+def pin_first(people: list[PersonStatus], name: str | None) -> list[PersonStatus]:
+    """Move the signed-in person's card to the top; the rest keep their order."""
+    pinned = [person for person in people if person.name == name]
+    return pinned + [person for person in people if person.name != name]
+
+
+def board_context(board: Board, me: str | None = None) -> dict:
     statuses = work_out_statuses(board)
     return {
-        "people": sort_statuses(statuses),
+        "me": me,
+        "people": pin_first(sort_statuses(statuses), me),
         "places": build_map(board, statuses),
         "latest_note": max(board.notes, key=lambda note: note.number),
         "notes": sorted(board.notes, key=lambda note: note.number, reverse=True),
@@ -56,7 +73,8 @@ def health() -> dict[str, str]:
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(request, "index.html", board_context(current_board()))
+    context = board_context(current_board(), signed_in_name(request))
+    return templates.TemplateResponse(request, "index.html", context)
 
 
 async def read_form(request: Request) -> dict[str, str]:
@@ -113,7 +131,17 @@ async def join(request: Request) -> RedirectResponse:
         fact = Fact(person=name, status="available", room=room, skills=skills)
         text = f"{name} joined, in {room or 'the building'}, available"
         log_note(current_board(), f"{name} joined", text, [fact], author=name)
-    return RedirectResponse("/", status_code=303)
+    response = RedirectResponse("/", status_code=303)
+    if name:
+        response.set_cookie(SIGNED_IN_COOKIE, quote(name), samesite="lax")
+    return response
+
+
+@app.get("/signout")
+def sign_out() -> RedirectResponse:
+    response = RedirectResponse("/", status_code=303)
+    response.delete_cookie(SIGNED_IN_COOKIE)
+    return response
 
 
 @app.get("/preview", response_class=HTMLResponse)
@@ -123,7 +151,7 @@ def preview(request: Request) -> HTMLResponse:
 
 @app.get("/fragments/board", response_class=HTMLResponse)
 def board_fragment(request: Request) -> HTMLResponse:
-    context = board_context(current_board())
+    context = board_context(current_board(), signed_in_name(request))
     return templates.TemplateResponse(request, "partials/board.html", context)
 
 

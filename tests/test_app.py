@@ -1,3 +1,5 @@
+import re
+
 from fastapi.testclient import TestClient
 
 from app import main
@@ -57,3 +59,38 @@ def test_join_adds_a_person_card() -> None:
     assert 'data-person="Jo" data-status="available"' in response.text
     assert "Jo joined, in Connection, available" in response.text
     main.logged_notes.clear()
+
+
+def test_signed_in_person_is_pinned_on_top_until_sign_out() -> None:
+    visitor = TestClient(app)
+    visitor.post("/join", data={"name": "Kai", "skills": "", "room": "Connection"})
+
+    page = visitor.get("/").text
+    order = re.findall(r'data-person="(\w+)"', page)
+    assert order[0] == "Kai"
+    assert "data-you" in page
+    assert "Signed in as" in page
+
+    page = visitor.get("/signout").text
+    assert "data-you" not in page
+    assert 'href="/join"' in page
+    main.logged_notes.clear()
+
+
+def test_three_columns_order_on_each_screen_size() -> None:
+    page = client.get("/").text
+    columns = dict(re.findall(r'data-column="(\w+)" class="([^"]+)"', page))
+
+    assert set(columns) == {"people", "rooms", "feed"}
+    # Phone: Feed, People, Rooms.
+    assert "order-1" in columns["feed"].split()
+    assert "order-2" in columns["people"].split()
+    assert "order-3" in columns["rooms"].split()
+    # Medium: People and Rooms side by side, Feed full width below.
+    assert "md:order-1" in columns["people"] and "md:order-2" in columns["rooms"]
+    assert "md:order-3" in columns["feed"] and "md:col-span-2" in columns["feed"]
+    # Wide: People, Feed (widest), Rooms.
+    assert "xl:order-1" in columns["people"]
+    assert "xl:order-2" in columns["feed"]
+    assert "xl:order-3" in columns["rooms"]
+    assert "xl:grid-cols-[1fr_1.6fr_1fr]" in page
