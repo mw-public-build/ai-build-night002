@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import parse_qs
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -95,6 +95,25 @@ TWIST_NOTES = [
         ),
     },
 ]
+
+
+@app.get("/join", response_class=HTMLResponse)
+def join_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(request, "join.html", {"places": current_board().places})
+
+
+@app.post("/join")
+async def join(request: Request) -> RedirectResponse:
+    """Demo sign-in: no account, just a note that puts the person on the board."""
+    form = await read_form(request)
+    name = form.get("name", "").strip()
+    if name:
+        room = form.get("room") or None
+        skills = [skill.strip() for skill in form.get("skills", "").split(",") if skill.strip()]
+        fact = Fact(person=name, status="available", room=room, skills=skills)
+        text = f"{name} joined, in {room or 'the building'}, available"
+        log_note(current_board(), f"{name} joined", text, [fact], author=name)
+    return RedirectResponse("/", status_code=303)
 
 
 @app.get("/preview", response_class=HTMLResponse)

@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app import main
 from app.main import app
 
 client = TestClient(app)
@@ -43,3 +44,16 @@ def test_static_files_are_served() -> None:
         "/static/fonts/source-serif-4-latin-wght-normal.woff2",
     ):
         assert client.get(path).status_code == 200, path
+
+
+def test_join_adds_a_person_card() -> None:
+    assert "Demo sign-in, no account is created." in client.get("/join").text
+
+    response = client.post(
+        "/join", data={"name": "Jo", "skills": "screens, catering", "room": "Connection"}
+    )
+
+    assert response.status_code == 200
+    assert 'data-person="Jo" data-status="available"' in response.text
+    assert "Jo joined, in Connection, available" in response.text
+    main.logged_notes.clear()
