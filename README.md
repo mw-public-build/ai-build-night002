@@ -1,5 +1,7 @@
 # AI Build Night 002
 
+The problem: Morgan at the front desk is a bottleneck. Every need goes through her. KWENCH Live relieves that: needs and status are shared with everyone, so people pick up problems themselves, and the latest notes show who's really free.
+
 A web app built live with FastAPI, HTMX and Tailwind.
 
 ## KWENCH Live
