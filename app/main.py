@@ -79,7 +79,7 @@ TWIST_NOTES = [
             status="available",
             room="Connection",
             skills=[],
-            activity="free after the welcome",
+            activity="on the phone",
         ),
     },
     {
