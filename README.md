@@ -16,7 +16,13 @@ Open http://localhost:8000.
 ## Run it in a Codespace
 
 On GitHub: **Code → Codespaces → Create codespace on main**. It installs
-everything on start. Then run the command above. To share the demo, open
+everything on start. Then run:
+
+```
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+To share the demo, open
 the **Ports** tab, right-click port 8000 and set **Port Visibility** to
 **Public**.
 
