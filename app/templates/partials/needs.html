@@ -1,0 +1,25 @@
+{% if needs %}
+<h2 class="font-serif text-base font-medium">Open needs</h2>
+<ul class="mt-1 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+  {% for need in needs %}
+  {% set tech = need.crisis.tech %}
+  <li class="rounded-xl border px-3 py-2 {{ 'border-amber-300 bg-amber-50' if need.taken_by else 'border-red-300 bg-red-50' }}" data-need="{{ need.note.number }}" data-taken="{{ 'yes' if need.taken_by else 'no' }}">
+    <p class="text-sm text-muted">Need #{{ "%02d" | format(need.note.number) }} · {{ need.room or "no room" }} · {{ need.note.time }}</p>
+    <p class="font-medium">“{{ need.note.text }}”</p>
+    {% if need.taken_by %}
+    <p class="mt-1 font-medium text-amber-800">Taken by {{ need.taken_by.author }}, note {{ "%02d" | format(need.taken_by.number) }}</p>
+    {% elif tech %}
+    <p class="mt-1 text-sm">Suggested: <span class="font-medium">{{ tech.name }}</span>, {{ tech.status }}{% if tech.room %} in {{ tech.room }}{% endif %}{% if tech.source %} (note {{ "%02d" | format(tech.source.number) }}){% endif %}.</p>
+    {% for person in need.crisis.passed_over %}
+    <p class="text-sm text-muted">Not {{ person.name }}: {{ person.status }}{% if person.source %} (note {{ "%02d" | format(person.source.number) }}){% endif %}.</p>
+    {% endfor %}
+    <button class="mt-1 rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-white hover:bg-accent-strong"
+      hx-post="/needs/{{ need.note.number }}/take" hx-swap="none"
+      hx-vals='{{ {"person": tech.name} | tojson }}'>I'll take it ({{ tech.name }})</button>
+    {% else %}
+    <p class="mt-1 text-sm">No one free has that skill right now.</p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

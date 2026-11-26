@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Join KWENCH Live{% endblock %}
+
+{% block content %}
+<section class="mx-auto mt-8 max-w-md rounded-xl border border-line bg-surface p-5">
+  <h1 class="font-serif text-2xl font-medium">Join KWENCH Live</h1>
+  <form class="mt-4 grid gap-3" method="post" action="/join">
+    <label class="grid gap-1 text-sm">Name
+      <input name="name" required class="rounded-lg border border-line bg-canvas px-3 py-1">
+    </label>
+    <label class="grid gap-1 text-sm">Skills (comma-separated)
+      <input name="skills" placeholder="e.g. screens, catering" class="rounded-lg border border-line bg-canvas px-3 py-1">
+    </label>
+    <label class="grid gap-1 text-sm">Where are you now?
+      <select name="room" class="rounded-lg border border-line bg-canvas px-3 py-1">
+        {% for place in places %}
+        <option>{{ place.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button class="rounded-lg bg-accent px-3 py-2 font-medium text-white hover:bg-accent-strong">Join KWENCH Live</button>
+    <p class="text-xs text-muted">Demo sign-in, no account is created.</p>
+  </form>
+</section>
+{% endblock %}

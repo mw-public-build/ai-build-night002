@@ -1,0 +1,17 @@
+<ol class="space-y-1">
+  {% for note in notes %}
+  <li class="rounded-lg bg-canvas px-2 py-1" data-note="{{ note.number }}">
+    <p class="text-xs">
+      <span class="font-medium">{{ note.author or note.title }}</span>
+      <span class="text-muted">· {{ note.time }} · #{{ "%02d" | format(note.number) }}</span>
+    </p>
+    <p class="text-sm">{{ note.text }}</p>
+    {% for fact in note.facts %}
+    <p class="text-xs text-muted">→ {{ fact.person }}: {{ fact.status }}{% if fact.room %} in {{ fact.room }}{% endif %}{% if fact.activity %}, {{ fact.activity }}{% endif %}</p>
+    {% endfor %}
+    {% for room_status in note.room_statuses %}
+    <p class="text-xs text-muted">→ {{ room_status.room }}: {{ room_status.text }} ({{ room_status.level }})</p>
+    {% endfor %}
+  </li>
+  {% endfor %}
+</ol>

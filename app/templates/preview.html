@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KWENCH Live preview</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/app.css') }}">
+  </head>
+  <body class="min-h-screen bg-canvas font-sans text-ink antialiased">
+    <main class="mx-auto px-4 py-8">
+      <h1 class="font-serif text-3xl font-medium tracking-tight">KWENCH Live on desktop and phone</h1>
+      <p class="mt-2 text-muted">Both frames show the same live board. Change it in one and the other follows within a few seconds.</p>
+
+      <div class="mt-8 flex flex-wrap items-start justify-center gap-10">
+        <figure>
+          <figcaption class="mb-2 text-sm text-muted">Desktop · 1280 × 800</figcaption>
+          {# The desktop frame is drawn at full size and scaled to 60%. #}
+          <div class="overflow-hidden rounded-xl border-4 border-ink bg-surface shadow-sm" style="width: 768px; height: 480px;">
+            <iframe src="/" title="KWENCH Live on desktop" style="width: 1280px; height: 800px; border: 0; transform: scale(0.6); transform-origin: 0 0;"></iframe>
+          </div>
+        </figure>
+
+        <figure>
+          <figcaption class="mb-2 text-sm text-muted">Phone · 390 × 844</figcaption>
+          {# The phone frame is drawn at full size and scaled to 80%. #}
+          <div class="overflow-hidden rounded-[2.5rem] border-[10px] border-ink bg-surface shadow-sm" style="width: 332px; height: 695px;">
+            <iframe src="/" title="KWENCH Live on a phone" style="width: 390px; height: 844px; border: 0; transform: scale(0.8); transform-origin: 0 0;"></iframe>
+          </div>
+        </figure>
+      </div>
+    </main>
+  </body>
+</html>

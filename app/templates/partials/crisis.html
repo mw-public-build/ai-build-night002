@@ -1,0 +1,58 @@
+{% macro cite(person) -%}
+{% if person.source %}note {{ "%02d" | format(person.source.number) }}, {{ person.source.time }}{% else %}no note{% endif %}
+{%- endmacro %}
+{% macro sent_line(note) -%}
+<p class="mt-3 text-sm font-medium text-green-700">Sent · logged as note {{ "%02d" | format(note.number) }}</p>
+{%- endmacro %}
+<article class="mt-2 rounded-xl border border-red-300 bg-red-50 p-3" data-crisis
+  hx-get="/fragments/crisis?problem={{ crisis.problem | urlencode }}"
+  hx-trigger="every 3s, notes-changed from:body" hx-swap="outerHTML">
+  <p class="text-sm font-medium uppercase tracking-wide text-red-700">Alert open</p>
+  <p class="font-medium">“{{ crisis.problem }}”</p>
+  <p class="mt-1 text-sm text-muted">
+    Room: {{ crisis.room or "not named" }}{% if crisis.booking %} · {{ crisis.booking.what }} (note {{ "%02d" | format(crisis.booking.note) }}){% endif %}
+    · Need: {{ crisis.skill or "no skill matched" }}
+  </p>
+
+  <div class="mt-2 grid gap-2 md:grid-cols-2">
+    <div class="rounded-lg bg-surface p-2 text-sm">
+      <p class="text-sm font-medium text-muted">Instruction to the tech contact</p>
+      {% if crisis.tech %}
+      <p class="mt-1" data-instruction>{{ crisis.instruction }}</p>
+      <p class="mt-1 text-sm text-muted">{{ crisis.tech.name }} is {{ crisis.tech.status }}{% if crisis.tech.room %} in {{ crisis.tech.room }}{% endif %} ({{ cite(crisis.tech) }}).</p>
+      {% for person in crisis.passed_over %}
+      <p class="mt-1 text-sm text-muted">Not {{ person.name }}: {{ person.status }}{% if person.room %} in {{ person.room }}{% endif %} ({{ cite(person) }}).</p>
+      {% endfor %}
+      {% if crisis.instruction_sent %}
+      {{ sent_line(crisis.instruction_sent) }}
+      {% else %}
+      <button class="mt-2 rounded-md bg-accent px-3 py-1 font-medium text-white hover:bg-accent-strong"
+        hx-post="/crisis/send" hx-swap="none"
+        hx-vals='{{ {"kind": "instruction", "text": crisis.instruction, "room": crisis.room or "", "names": crisis.tech.name} | tojson }}'>Send</button>
+      {% endif %}
+      {% else %}
+      <p class="mt-1">No one free has that skill right now.</p>
+      {% for person in crisis.passed_over %}
+      <p class="mt-1 text-sm text-muted">Not {{ person.name }}: {{ person.status }}{% if person.room %} in {{ person.room }}{% endif %} ({{ cite(person) }}).</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="rounded-lg bg-surface p-2 text-sm">
+      <p class="text-sm font-medium text-muted">Request to everyone else not on a task</p>
+      {% if crisis.request %}
+      <p class="mt-1">{{ crisis.request }}</p>
+      {% if crisis.request_sent %}
+      {{ sent_line(crisis.request_sent) }}
+      {% else %}
+      <button class="mt-2 rounded-md bg-accent px-3 py-1 font-medium text-white hover:bg-accent-strong"
+        hx-post="/crisis/send" hx-swap="none"
+        hx-vals='{{ {"kind": "request", "text": crisis.request, "room": crisis.room or "", "names": crisis.helpers | map(attribute="name") | join(",")} | tojson }}'>Send</button>
+      {% endif %}
+      {% else %}
+      <p class="mt-1">No one else is free.</p>
+      {% endif %}
+    </div>
+  </div>
+  <p class="mt-1 text-xs text-muted">Simulated: Send logs a note; no real message goes out. The card re-routes when the notes change.</p>
+</article>
